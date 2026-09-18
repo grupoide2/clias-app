@@ -1,3 +1,4 @@
+import 'package:chatbot/service/recurso_service.dart';
 import 'package:chatbot/view/screens/about_us.dart';
 import 'package:chatbot/view/widgets/custom_button.dart';
 import 'package:chatbot/view/widgets/utils.dart';
@@ -40,8 +41,22 @@ class CustomAppBarState extends State<CustomAppBar> {
   }
 
   void _initVideoPlayer() async {
-    final video = VideoPlayerController.asset('assets/videos/sample.mp4');
-    await video.initialize();
+    const asset = 'assets/videos/sample.mp4';
+    // Tutorial general de uso de la app: si el admin publicó un reemplazo
+    // (slug `video_tutorial_app`) se usa ese; si no, el video embebido.
+    final videoUrl = await RecursoService.videoTutorialAppUrl();
+    VideoPlayerController video;
+    try {
+      video = videoUrl != null
+          ? VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+          : VideoPlayerController.asset(asset);
+      await video.initialize();
+    } catch (_) {
+      video = VideoPlayerController.asset(asset);
+      await video.initialize();
+    }
+
+    if (!mounted) return;
 
     final chewie = ChewieController(
       videoPlayerController: video,
