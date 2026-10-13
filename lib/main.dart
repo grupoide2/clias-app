@@ -1,3 +1,4 @@
+import 'package:chatbot/config/env.dart';
 import 'package:chatbot/router.dart';
 import 'package:chatbot/service/firebase_messaging_handler.dart';
 import 'package:chatbot/utils/app_usage_tracker.dart';
@@ -12,6 +13,7 @@ import 'log_utils.dart';
 Future<void> main() async {
   initializeLogger();
   WidgetsFlutterBinding.ensureInitialized();
+  await AppConfig.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.requestPermission();
   await FirebaseMessagingHandler.initializeFCM();
