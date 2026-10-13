@@ -46,8 +46,24 @@ class FirebaseMessagingHandler {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
+    // En iOS el permiso ya lo pide FirebaseMessaging.requestPermission()
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+
     const InitializationSettings initSettings =
-        InitializationSettings(android: androidSettings);
+        InitializationSettings(android: androidSettings, iOS: iosSettings);
+
+    // iOS: mostrar el banner del sistema aunque la app esté abierta
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(
       initSettings,
@@ -89,6 +105,7 @@ class FirebaseMessagingHandler {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
+      // En iOS el banner lo muestra el sistema (ver setForegroundNotificationPresentationOptions)
       if (notification != null && android != null) {
         _flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -109,6 +126,8 @@ class FirebaseMessagingHandler {
           ),
           payload: jsonEncode(message.data), // Necesario para detectar el click
         );
+      }
+      if (notification != null) {
         Notifications.globalKey.currentState?.recargarDesdeExterior();
         Dashboard.globalKey.currentState
             ?.actualizarNotificacionesDelDashboard();
@@ -342,6 +361,11 @@ class FirebaseMessagingHandler {
 
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
 
     await _flutterLocalNotificationsPlugin.show(

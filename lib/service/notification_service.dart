@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:chatbot/model/responses/notificacion_response.dart';
 import 'package:chatbot/model/storage/storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:device_info_plus/device_info_plus.dart'; // Para obtener info del dispositivo
 import 'package:chatbot/config/env.dart'; // Cambio de ambientes
 import 'package:logger/logger.dart';
@@ -70,6 +71,19 @@ class NotificationService {
 
     // Solicitar permiso de notificación
     await FirebaseMessaging.instance.requestPermission();
+
+    // En iOS, getToken() falla si todavía no llega el token de APNs
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      for (int i = 0; apnsToken == null && i < 10; i++) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      }
+      if (apnsToken == null) {
+        _log.i("[X] No se pudo obtener el token APNs");
+        throw Exception("No se pudo obtener el token APNs");
+      }
+    }
 
     // Obtener token FCM
     String? fcmToken = await FirebaseMessaging.instance.getToken();

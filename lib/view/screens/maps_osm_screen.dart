@@ -204,7 +204,7 @@ class _MapsOSMScreenState extends State<MapsOSMScreen> {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.chatbot'
+          userAgentPackageName: 'com.ucuenca.sisa'
         ),
         MarkerLayer(markers: _buildMarkers()),
       ],

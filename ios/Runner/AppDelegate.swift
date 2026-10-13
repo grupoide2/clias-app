@@ -7,6 +7,8 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Necesario para que flutter_local_notifications reciba los toques en iOS
+    UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
