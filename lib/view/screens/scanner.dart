@@ -75,15 +75,17 @@ class _QRScannerPageState extends State<Scanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(profileButton: false),
-      body: _modoManual
-          ? SingleChildScrollView(child: _buildManual())
-          : Column(
-              children: [
-                _buildSubtitle(),
-                Expanded(child: _buildQRScanner()),
-                _buildLinkManual(),
-              ],
-            ),
+      body: SafeArea(
+        child: _modoManual
+            ? SingleChildScrollView(child: _buildManual())
+            : Column(
+                children: [
+                  _buildSubtitle(),
+                  Expanded(child: _buildQRScanner()),
+                  _buildLinkManual(),
+                ],
+              ),
+      ),
     );
   }
 

@@ -5,7 +5,6 @@ import 'package:chatbot/service/paciente_service.dart';
 // DESACTIVADO: el registro del automuestreo ya no pasa por el scanner.
 // import 'package:chatbot/service/sesion_chat_service.dart';
 import 'package:chatbot/view/widgets/custom_app_bar.dart';
-import 'package:chatbot/view/widgets/custom_button.dart';
 import 'package:chatbot/view/widgets/custom_loading_button.dart';
 import 'package:chatbot/view/widgets/utils.dart';
 import 'package:flutter/material.dart';
@@ -114,13 +113,6 @@ class ScannerResultPageState extends State<ScannerResultPage> {
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 25),
-                CustomButton(
-                    color: AllowedColors.red,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    label: "Escanear de nuevo"),
-                SizedBox(height: 15),
                 CustomLoadingButton(
                     color: AllowedColors.blue,
                     label: "Aceptar",
@@ -131,7 +123,17 @@ class ScannerResultPageState extends State<ScannerResultPage> {
                             if (widget.qrData != "Código QR no válido") {
                               _registerDevice(widget.qrData);
                             }
-                          })
+                          }),
+                SizedBox(height: 10),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Escanear de nuevo",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AllowedColors.red)))
               ],
             ),
           ),
