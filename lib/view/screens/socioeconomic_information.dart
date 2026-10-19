@@ -11,10 +11,22 @@ import 'package:go_router/go_router.dart';
 
 class SocioeconomicInformation extends StatefulWidget {
   const SocioeconomicInformation(
-      {super.key, this.infoSocioeconomicaRequest, this.edit = false});
+      {super.key,
+      this.infoSocioeconomicaRequest,
+      this.edit = false,
+      this.onSaved,
+      this.onCancel});
 
   final InfSocioeconomicaRequest? infoSocioeconomicaRequest;
   final bool edit;
+
+  /// En modo edición: qué hacer tras guardar con éxito. Si se omite, navega
+  /// a '/dashboard' (comportamiento por defecto al editar desde el perfil).
+  final VoidCallback? onSaved;
+
+  /// Qué hacer al confirmar "Cancelar". Si se omite, usa el comportamiento
+  /// por defecto (cerrar esta pantalla y la de datos personales debajo).
+  final VoidCallback? onCancel;
 
   @override
   State<SocioeconomicInformation> createState() =>
@@ -153,7 +165,9 @@ class _SocioeconomicInfoFormState extends State<SocioeconomicInformation>
                       ? "¿Desea cancelar la edición de su cuenta? Se perderán todos los datos ingresados."
                       : "¿Desea cancelar la creación de su cuenta? Se perderán todos los datos ingresados.",
                   onYes: () {
-                  if (widget.edit) {
+                  if (widget.onCancel != null) {
+                    widget.onCancel!();
+                  } else if (widget.edit) {
                     Navigator.of(context)
                       ..pop()   // SocioeconomicInformation
                       ..pop();  // /personal-data
@@ -294,7 +308,13 @@ class _SocioeconomicInfoFormState extends State<SocioeconomicInformation>
               final doneLoading = modalLoadingDialog(context: context);
               PacienteService.update(context, user.paciente).then((value) {
                 doneLoading();
-                if (context.mounted && value) context.go('/dashboard');
+                if (context.mounted && value) {
+                  if (widget.onSaved != null) {
+                    widget.onSaved!();
+                  } else {
+                    context.go('/dashboard');
+                  }
+                }
               });
             } else {
               Navigator.push(

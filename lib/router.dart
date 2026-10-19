@@ -1,5 +1,6 @@
 import 'package:chatbot/app_keys.dart';
 import 'package:chatbot/model/requests/paciente_request.dart';
+import 'package:chatbot/model/requests/user_request.dart';
 import 'package:chatbot/utils/dashboard_listener.dart';
 import 'package:chatbot/view/screens/about_us.dart';
 import 'package:chatbot/view/screens/dashboard.dart';
@@ -9,7 +10,7 @@ import 'package:chatbot/view/screens/password.dart';
 import 'package:chatbot/view/screens/personal_data_form.dart';
 import 'package:chatbot/view/screens/presentation.dart';
 import 'package:chatbot/view/screens/register.dart';
-import 'package:chatbot/view/screens/requiredSocioeconomicForm.dart';
+import 'package:chatbot/view/screens/socioeconomic_information.dart';
 import 'package:chatbot/view/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -79,9 +80,20 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/required-socioeconomic',
-      builder: (context, state) => RequiredSocioeconomicForm(
-        paciente: state.extra as PacienteRequest,
-      ),
+      builder: (context, state) {
+        final paciente = state.extra as PacienteRequest;
+        // El formulario de información socioeconómica edita sobre un
+        // UserRequest en memoria (mismo mecanismo que /personal-data).
+        UserRequest.setUserRequest(UserRequest('', '', 'USER', true, paciente));
+        return SocioeconomicInformation(
+          infoSocioeconomicaRequest: paciente.infoSocioeconomica,
+          edit: true,
+          onCancel: () => Navigator.of(context).pop(),
+          onSaved: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => LikertSurveyPage()),
+          ),
+        );
+      },
     ),
     GoRoute(
       path: '/encuesta',
